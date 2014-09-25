@@ -19,21 +19,16 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     qsubtasks = QStandardItemModel()
     
     def __init__ ( self, parent = None ):
-        QMainWindow.__init__( self, parent )
         #http://pythonadventures.wordpress.com/2013/01/10/launch-just-one-instance-of-a-qt-application/
         wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
-        if_focus = os.popen('xdotool getactivewindow getwindowpid').readlines()
-        if if_focus == wid:
-            #da cambiare
-            self.hide()
-            sys.exit()
+        QMainWindow.__init__( self, parent )
+        self.setMouseTracking(True)
         if len(wid) > 0:
             wid = wid[0]
         mouse = QCursor.pos()
         if wid:
             os.system('xdotool windowactivate ' + wid)
-            #non và
-            os.system('xdotool getactivewindow windowmove ' + format(mouse.x()) + ' ' + format(mouse.y()) + 20)
+            os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
             sys.exit()
         else:
             #Load the ui
@@ -42,6 +37,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             #Set the MainWindow Title
             self.setWindowTitle(self.appname)
             #Connect the function with the signal
+            #self.ui.mouseReleaseEvent()
             self.ui.pushSettings.clicked.connect(self.openKeyDialog)
             self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
             self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
@@ -50,8 +46,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             #Show the form
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.show()
-            
-            os.system('xdotool getactivewindow windowmove ' + format(mouse.x()) + ' ' + format(mouse.y()))
+            os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
             self.loadAsana()
         
     def openKeyDialog(self):
@@ -62,7 +57,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     def loadAsana(self):
         if self.settings.value('Key') != -1:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.asana_api = asana.AsanaAPI(self.settings.value('Key'), debug=True)
+            self.asana_api = asana.AsanaAPI(self.settings.value('Key'))
             workspace = self.asana_api.list_workspaces()
             for i in workspace:
                 self.workspaces_id[i['name']] = i['id']
@@ -101,6 +96,11 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     def asana_get_project_tasks(self,project_id):
         return self.asana_api._asana('projects/' + str(project_id) + '/tasks?completed_since=now')
         
+    def mouseReleaseEvent(self):  
+        posMouse = QCursor.pos()
+        if not self.rect().contains(posMouse):
+            self.hide()
+            
 def main():
     #Start the software
     app = QApplication(sys.argv)
