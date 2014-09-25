@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/mte90/Desktop/Prog/QAsana/main.ui'
 #
-# Created: Thu Sep 25 13:24:57 2014
+# Created: Thu Sep 25 17:12:31 2014
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(640, 480)
+        MainWindow.resize(630, 470)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
@@ -56,14 +56,9 @@ class Ui_MainWindow(object):
         self.pushSettings.setObjectName(_fromUtf8("pushSettings"))
         self.horizontalLayout.addWidget(self.pushSettings)
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
-        self.scrollSubTasks = QtGui.QScrollArea(self.gridLayoutWidget)
-        self.scrollSubTasks.setWidgetResizable(True)
-        self.scrollSubTasks.setObjectName(_fromUtf8("scrollSubTasks"))
-        self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 623, 433))
-        self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
-        self.scrollSubTasks.setWidget(self.scrollAreaWidgetContents)
-        self.gridLayout.addWidget(self.scrollSubTasks, 2, 0, 1, 1)
+        self.listTasks = QtGui.QListView(self.gridLayoutWidget)
+        self.listTasks.setObjectName(_fromUtf8("listTasks"))
+        self.gridLayout.addWidget(self.listTasks, 2, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -71,7 +66,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.label.setText(_translate("MainWindow", "Workspace", None))
+        self.label.setText(_translate("MainWindow", " Workspace", None))
         self.label_2.setText(_translate("MainWindow", "Project", None))
         self.pushSettings.setText(_translate("MainWindow", "Settings", None))
 

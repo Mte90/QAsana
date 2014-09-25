@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>630</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Workspace</string>
+          <string> Workspace</string>
          </property>
         </widget>
        </item>
@@ -76,21 +76,7 @@
       </layout>
      </item>
      <item row="2" column="0">
-      <widget class="QScrollArea" name="scrollSubTasks">
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>623</width>
-          <height>433</height>
-         </rect>
-        </property>
-       </widget>
-      </widget>
+      <widget class="QListView" name="listTasks"/>
      </item>
     </layout>
    </widget>
