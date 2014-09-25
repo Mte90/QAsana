@@ -3,14 +3,16 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from asana import asana
+from subprocess import Popen, PIPE,STDOUT
 #The fondamental for working with python
-import os,sys,signal
+import os,sys,signal,shlex
 from ui_main import Ui_MainWindow
 class MainWindow ( QMainWindow , Ui_MainWindow):
     #Create settings for the software
     settings = QSettings('Mte90','QAsana')
     settings.setFallbacksEnabled(False)
     version = '1.0'
+    appname = 'QAsana - ' + version + ' by Mte90'
     workspaces_id = {}
     projects_id = {}
     proj_tasks_id = {}
@@ -18,32 +20,33 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     
     def __init__ ( self, parent = None ):
         QMainWindow.__init__( self, parent )
-        #Load the ui
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi( self )
-        #Set the MainWindow Title
-        self.setWindowTitle('QAsana - ' + self.version + ' by Mte90')
-        #Connect the function with the signal
-        self.ui.pushSettings.clicked.connect(self.openKeyDialog)
-        self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
-        self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
-        #When the software are closed on console the software are closed
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-        #center the window on the screen
-        #http://www.eurion.net/python-snippets/snippet/Center%20window.html
-        screen = QDesktopWidget().screenGeometry()
-        # ... and get this windows' dimensions
-        mysize = self.geometry()
-        # The horizontal position is calulated as screenwidth - windowwidth /2
-        hpos = ( screen.width() - mysize.width() ) / 2
-        # And vertical position the same, but with the height dimensions
-        vpos = ( screen.height() - mysize.height() - mysize.height() ) / 2
-        # And the move call repositions the window
-        #self.move(hpos, vpos)
-        #Show the form
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.show()
-        self.loadAsana()
+        #http://pythonadventures.wordpress.com/2013/01/10/launch-just-one-instance-of-a-qt-application/
+        wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
+        if len(wid) > 0:
+            wid = wid[0]
+        mouse = QCursor.pos()
+        if wid:
+            os.system('xdotool windowactivate ' + wid)
+            os.system('xdotool getactivewindow windowmove ' + str(mouse.x()) + ' ' + str(mouse.y()) + 20)
+            sys.exit()
+        else:
+            #Load the ui
+            self.ui = Ui_MainWindow()
+            self.ui.setupUi( self )
+            #Set the MainWindow Title
+            self.setWindowTitle(self.appname)
+            #Connect the function with the signal
+            self.ui.pushSettings.clicked.connect(self.openKeyDialog)
+            self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
+            self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
+            #When the software are closed on console the software are closed
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
+            #Show the form
+            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+            self.show()
+            
+            os.system('xdotool getactivewindow windowmove ' + str(mouse.x()) + ' ' + str(mouse.y()))
+            self.loadAsana()
         
     def openKeyDialog(self):
         key, ok = QInputDialog.getText(self, 'Authorization Key', 'Insert the key:',QLineEdit.Normal,self.settings.value('Key'))
@@ -87,7 +90,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             self.proj_tasks_id[i['name']] = i['id']
         self.ui.listTasks.setModel(self.qsubtasks)
         QApplication.restoreOverrideCursor()
-            
+        
 def main():
     #Start the software
     app = QApplication(sys.argv)
@@ -96,5 +99,6 @@ def main():
     ui.setupUi(MainWindow_)
     #Add the close feature at the program with the X
     sys.exit(app.exec_())
+    
 #Execute the software
 main() 
