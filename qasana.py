@@ -22,12 +22,18 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         QMainWindow.__init__( self, parent )
         #http://pythonadventures.wordpress.com/2013/01/10/launch-just-one-instance-of-a-qt-application/
         wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
+        if_focus = os.popen('xdotool getactivewindow getwindowpid').readlines()
+        if if_focus == wid:
+            #da cambiare
+            self.hide()
+            sys.exit()
         if len(wid) > 0:
             wid = wid[0]
         mouse = QCursor.pos()
         if wid:
             os.system('xdotool windowactivate ' + wid)
-            os.system('xdotool getactivewindow windowmove ' + str(mouse.x()) + ' ' + str(mouse.y()) + 20)
+            #non và
+            os.system('xdotool getactivewindow windowmove ' + format(mouse.x()) + ' ' + format(mouse.y()) + 20)
             sys.exit()
         else:
             #Load the ui
@@ -45,7 +51,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.show()
             
-            os.system('xdotool getactivewindow windowmove ' + str(mouse.x()) + ' ' + str(mouse.y()))
+            os.system('xdotool getactivewindow windowmove ' + format(mouse.x()) + ' ' + format(mouse.y()))
             self.loadAsana()
         
     def openKeyDialog(self):
