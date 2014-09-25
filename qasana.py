@@ -62,7 +62,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     def loadAsana(self):
         if self.settings.value('Key') != -1:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.asana_api = asana.AsanaAPI(self.settings.value('Key'))
+            self.asana_api = asana.AsanaAPI(self.settings.value('Key'), debug=True)
             workspace = self.asana_api.list_workspaces()
             for i in workspace:
                 self.workspaces_id[i['name']] = i['id']
@@ -84,7 +84,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     
     def comboProjectChanged(self):
         project_id = self.projects_id[self.ui.comboProject.currentText()]
-        proj_tasks = self.asana_api.get_project_tasks(project_id, False)
+        proj_tasks = self.asana_get_project_tasks(project_id)
         self.qsubtasks = QStandardItemModel()
         for i in proj_tasks:
             item = QStandardItem(i['name'])
@@ -96,6 +96,10 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             self.proj_tasks_id[i['name']] = i['id']
         self.ui.listTasks.setModel(self.qsubtasks)
         QApplication.restoreOverrideCursor()
+        
+    #fix the include_archived not supported on get_project_tasks
+    def asana_get_project_tasks(self,project_id):
+        return self.asana_api._asana('projects/' + str(project_id) + '/tasks?completed_since=now')
         
 def main():
     #Start the software
