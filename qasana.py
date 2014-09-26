@@ -21,12 +21,17 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     def __init__ ( self, parent = None ):
         #http://pythonadventures.wordpress.com/2013/01/10/launch-just-one-instance-of-a-qt-application/
         wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
+        if_focus = os.popen('xdotool getactivewindow').readlines()
         QMainWindow.__init__( self, parent )
         self.setMouseTracking(True)
         if len(wid) > 0:
             wid = wid[0]
+        if if_focus[0] == wid:
+            os.popen('xdotool windowunmap "' + wid + '"')
+            sys.exit()
         mouse = QCursor.pos()
         if wid:
+            os.system('xdotool windowmap ' + wid)
             os.system('xdotool windowactivate ' + wid)
             os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
             sys.exit()
