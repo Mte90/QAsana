@@ -5,10 +5,12 @@ Simple interface for Asana in Python(3)-Qt(4)
 
 Made it for show/hide with a hotkey in your DE.  
 
+![](screenshot.png)
+
 #Param
 
     qasana.py --hide
-    
+
 Silent start mode
 
 #Installation
