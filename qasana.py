@@ -34,8 +34,11 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         mouse = QCursor.pos()
         #Software already opened
         if wid:
+            #Show
             os.system('xdotool windowmap ' + wid)
+            #get focus
             os.system('xdotool windowactivate ' + wid)
+            #move under cursor
             os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
             sys.exit()
         else:
@@ -45,7 +48,6 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             #Set the MainWindow Title
             self.setWindowTitle(self.appname)
             #Connect the function with the signal
-            #self.ui.mouseReleaseEvent()
             self.ui.pushSettings.clicked.connect(self.openKeyDialog)
             self.ui.pushRefresh.clicked.connect(self.loadAsana)
             self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
@@ -55,6 +57,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             #Show the form
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.show()
+            #move under cursor
             os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
             self.loadAsana()
         
@@ -65,12 +68,16 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         
     def loadAsana(self):
         if self.settings.value('Key') != -1:
+            self.ui.comboWorkspace.currentIndexChanged.disconnect(self.comboWorkspaceChanged)
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.asana_api = asana.AsanaAPI(self.settings.value('Key'))
+            #get workspace
             workspace = self.asana_api.list_workspaces()
             for i in workspace:
                 self.workspaces_id[i['name']] = i['id']
+                #populate the combobox
                 self.ui.comboWorkspace.addItem(i['name'])
+            self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
             self.comboWorkspaceChanged()
         else:
             QMessageBox.critical(self.window(), "Key not configured","Set the key for access to Asana!")
@@ -78,16 +85,19 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     def comboWorkspaceChanged(self):
         self.ui.comboProject.currentIndexChanged.disconnect(self.comboProjectChanged)
         task_id = self.workspaces_id[self.ui.comboWorkspace.currentText()]
+        #get projects
         projects = self.asana_api.list_projects(task_id, False)
         self.ui.comboProject.clear()
         for i in projects:
             self.projects_id[i['name']] = i['id']
+            #populate the combobox
             self.ui.comboProject.addItem(i['name'])
         self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
         self.comboProjectChanged()
     
     def comboProjectChanged(self):
         project_id = self.projects_id[self.ui.comboProject.currentText()]
+        #get project tasks
         proj_tasks = self.asana_get_project_tasks(project_id)
         self.qsubtasks = QStandardItemModel()
         for i in proj_tasks:
@@ -96,19 +106,15 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
                 check = Qt.Unchecked
                 item.setCheckState(check)
                 item.setCheckable(True)
+            #populate the listview
             self.qsubtasks.appendRow(item)
             self.proj_tasks_id[i['name']] = i['id']
         self.ui.listTasks.setModel(self.qsubtasks)
-        QApplication.restoreOverrideCursor()
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         
     #fix the include_archived not supported on get_project_tasks
     def asana_get_project_tasks(self,project_id):
         return self.asana_api._asana('projects/' + str(project_id) + '/tasks?completed_since=now')
-        
-    def mouseReleaseEvent(self):  
-        posMouse = QCursor.pos()
-        if not self.rect().contains(posMouse):
-            self.hide()
             
 def main():
     #Start the software
