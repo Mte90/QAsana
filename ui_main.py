@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/mte90/Desktop/Prog/QAsana/main.ui'
 #
-# Created: Fri Sep 26 11:31:12 2014
+# Created: Fri Sep 26 13:18:54 2014
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -36,6 +36,21 @@ class Ui_MainWindow(object):
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.lineTask = QtGui.QLineEdit(self.gridLayoutWidget)
+        self.lineTask.setObjectName(_fromUtf8("lineTask"))
+        self.horizontalLayout_2.addWidget(self.lineTask)
+        self.pushAddTask = QtGui.QPushButton(self.gridLayoutWidget)
+        self.pushAddTask.setObjectName(_fromUtf8("pushAddTask"))
+        self.horizontalLayout_2.addWidget(self.pushAddTask)
+        self.pushUpdate = QtGui.QPushButton(self.gridLayoutWidget)
+        self.pushUpdate.setObjectName(_fromUtf8("pushUpdate"))
+        self.horizontalLayout_2.addWidget(self.pushUpdate)
+        self.gridLayout.addLayout(self.horizontalLayout_2, 4, 0, 1, 1)
+        self.listTasks = QtGui.QListView(self.gridLayoutWidget)
+        self.listTasks.setObjectName(_fromUtf8("listTasks"))
+        self.gridLayout.addWidget(self.listTasks, 2, 0, 1, 1)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(self.gridLayoutWidget)
@@ -63,9 +78,6 @@ class Ui_MainWindow(object):
         self.pushSettings.setObjectName(_fromUtf8("pushSettings"))
         self.horizontalLayout.addWidget(self.pushSettings)
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
-        self.listTasks = QtGui.QListView(self.gridLayoutWidget)
-        self.listTasks.setObjectName(_fromUtf8("listTasks"))
-        self.gridLayout.addWidget(self.listTasks, 2, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -73,6 +85,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        self.pushAddTask.setText(_translate("MainWindow", "New task", None))
+        self.pushUpdate.setText(_translate("MainWindow", "Update Task List", None))
         self.label.setText(_translate("MainWindow", " Workspace", None))
         self.label_2.setText(_translate("MainWindow", "Project", None))
         self.pushRefresh.setText(_translate("MainWindow", "Refresh", None))

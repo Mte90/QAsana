@@ -5,7 +5,7 @@ from PyQt4.QtGui import *
 from asana import asana
 from subprocess import Popen
 #The fondamental for working with python
-import os,sys,signal,argparse
+import os,sys,signal,argparse,time
 from ui_main import Ui_MainWindow
 class MainWindow ( QMainWindow , Ui_MainWindow):
     #Create settings for the software
@@ -48,6 +48,9 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             #Connect the function with the signal
             self.ui.pushSettings.clicked.connect(self.openKeyDialog)
             self.ui.pushRefresh.clicked.connect(self.loadAsana)
+            self.ui.pushAddTask.clicked.connect(self.addTask)
+            self.ui.pushUpdate.clicked.connect(self.updateTaskList)
+            self.ui.lineTask.returnPressed.connect(self.addTask)
             self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
             self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
             #When the software are closed on console the software are closed
@@ -78,7 +81,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         if self.settings.value('Key') != -1:
             self.ui.comboWorkspace.currentIndexChanged.disconnect(self.comboWorkspaceChanged)
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.asana_api = asana.AsanaAPI(self.settings.value('Key'))
+            self.asana_api = asana.AsanaAPI(self.settings.value('Key'), debug=True)
             #get workspace
             workspace = self.asana_api.list_workspaces()
             self.ui.comboWorkspace.clear()
@@ -93,9 +96,9 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     
     def comboWorkspaceChanged(self):
         self.ui.comboProject.currentIndexChanged.disconnect(self.comboProjectChanged)
-        task_id = self.workspaces_id[self.ui.comboWorkspace.currentText()]
+        self.workspace_id = self.workspaces_id[self.ui.comboWorkspace.currentText()]
         #get projects
-        projects = self.asana_api.list_projects(task_id, False)
+        projects = self.asana_api.list_projects(self.workspace_id, False)
         self.ui.comboProject.clear()
         for i in projects:
             self.projects_id[i['name']] = i['id']
@@ -105,26 +108,37 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         self.comboProjectChanged()
     
     def comboProjectChanged(self):
-        self.project_id = self.projects_id[self.ui.comboProject.currentText()]
-        #get project tasks
-        proj_tasks = self.asana_get_project_tasks(self.project_id)
-        qsubtasks = QStandardItemModel()
-        for i in proj_tasks:
-            item = QStandardItem(i['name'])
-            if not i['name'].endswith(':'):
-                check = Qt.Unchecked
-                item.setCheckState(check)
-                item.setCheckable(True)
-                self.projects_id[i['name']] = i['id']
-            #populate the listview
-            qsubtasks.appendRow(item)
-        self.ui.listTasks.setModel(qsubtasks)
-        qsubtasks.itemChanged.connect(self.checkTasks)
-        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        if len(self.ui.comboProject.currentText()) > 0:
+            self.project_id = self.projects_id[self.ui.comboProject.currentText()]
+            #get project tasks
+            proj_tasks = self.asana_get_project_tasks(self.project_id)
+            qsubtasks = QStandardItemModel()
+            for i in proj_tasks:
+                item = QStandardItem(i['name'])
+                if not i['name'].endswith(':'):
+                    check = Qt.Unchecked
+                    item.setCheckState(check)
+                    item.setCheckable(True)
+                    self.projects_id[i['name']] = i['id']
+                #populate the listview
+                qsubtasks.appendRow(item)
+            self.ui.listTasks.setModel(qsubtasks)
+            QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+            qsubtasks.itemChanged.connect(self.checkTasks)
         
     def checkTasks(self, item):
+        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         self.asana_api.rm_project_task(self.projects_id[item.text()], self.project_id)
         self.ui.listTasks.model().removeRow(item.row())
+        QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        
+    def addTask(self):
+        task = self.ui.lineTask.text()
+        self.ui.lineTask.setText('')
+        self.asana_api.create_task(task, self.workspace_id, 'me', None, False, None, None, None, [self.project_id])
+        
+    def updateTaskList(self):
+        self.comboProjectChanged()
         
     #fix the include_archived not supported on get_project_tasks
     def asana_get_project_tasks(self,project_id):
