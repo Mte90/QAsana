@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/mte90/Desktop/Prog/QAsana/main.ui'
 #
-# Created: Fri Sep 26 13:18:54 2014
+# Created: Fri Sep 26 13:36:44 2014
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -85,7 +85,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.pushAddTask.setText(_translate("MainWindow", "New task", None))
+        self.pushAddTask.setText(_translate("MainWindow", "New Task", None))
         self.pushUpdate.setText(_translate("MainWindow", "Update Task List", None))
         self.label.setText(_translate("MainWindow", " Workspace", None))
         self.label_2.setText(_translate("MainWindow", "Project", None))
