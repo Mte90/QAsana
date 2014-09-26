@@ -123,7 +123,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def checkTasks(self, item):
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.asana_api.rm_project_task(self.projects_id[item.text()], self.project_id)
+        self.asana_api.update_task(self.projects_id[item.text()], None, None, None, True, None, None)
         self.ui.listTasks.model().removeRow(item.row())
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
 
