@@ -36,7 +36,7 @@
         <widget class="QLabel" name="label">
          <property name="maximumSize">
           <size>
-           <width>16777215</width>
+           <width>70</width>
            <height>16777215</height>
           </size>
          </property>
@@ -49,7 +49,7 @@
         <widget class="QComboBox" name="comboWorkspace">
          <property name="minimumSize">
           <size>
-           <width>200</width>
+           <width>160</width>
            <height>0</height>
           </size>
          </property>
@@ -57,6 +57,12 @@
        </item>
        <item>
         <widget class="QLabel" name="label_2">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Project</string>
          </property>
@@ -66,14 +72,33 @@
         <widget class="QComboBox" name="comboProject">
          <property name="minimumSize">
           <size>
-           <width>200</width>
+           <width>160</width>
            <height>0</height>
           </size>
          </property>
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushRefresh">
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushSettings">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Settings</string>
          </property>

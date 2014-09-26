@@ -24,12 +24,15 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         if_focus = os.popen('xdotool getactivewindow').readlines()
         QMainWindow.__init__( self, parent )
         self.setMouseTracking(True)
+        #Check if multiple rows output
         if len(wid) > 0:
             wid = wid[0]
+        #hide if the window have focues when executed again
         if if_focus[0] == wid:
             os.popen('xdotool windowunmap "' + wid + '"')
             sys.exit()
         mouse = QCursor.pos()
+        #Software already opened
         if wid:
             os.system('xdotool windowmap ' + wid)
             os.system('xdotool windowactivate ' + wid)
@@ -44,6 +47,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             #Connect the function with the signal
             #self.ui.mouseReleaseEvent()
             self.ui.pushSettings.clicked.connect(self.openKeyDialog)
+            self.ui.pushRefresh.clicked.connect(self.loadAsana)
             self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
             self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
             #When the software are closed on console the software are closed

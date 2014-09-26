@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/mte90/Desktop/Prog/QAsana/main.ui'
 #
-# Created: Thu Sep 25 17:12:31 2014
+# Created: Fri Sep 26 11:31:12 2014
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,6 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(630, 470)
+        MainWindow.setMaximumSize(QtCore.QSize(630, 470))
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
@@ -38,21 +39,27 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(self.gridLayoutWidget)
-        self.label.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.label.setMaximumSize(QtCore.QSize(70, 16777215))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         self.comboWorkspace = QtGui.QComboBox(self.gridLayoutWidget)
-        self.comboWorkspace.setMinimumSize(QtCore.QSize(200, 0))
+        self.comboWorkspace.setMinimumSize(QtCore.QSize(160, 0))
         self.comboWorkspace.setObjectName(_fromUtf8("comboWorkspace"))
         self.horizontalLayout.addWidget(self.comboWorkspace)
         self.label_2 = QtGui.QLabel(self.gridLayoutWidget)
+        self.label_2.setMaximumSize(QtCore.QSize(50, 16777215))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout.addWidget(self.label_2)
         self.comboProject = QtGui.QComboBox(self.gridLayoutWidget)
-        self.comboProject.setMinimumSize(QtCore.QSize(200, 0))
+        self.comboProject.setMinimumSize(QtCore.QSize(160, 0))
         self.comboProject.setObjectName(_fromUtf8("comboProject"))
         self.horizontalLayout.addWidget(self.comboProject)
+        self.pushRefresh = QtGui.QPushButton(self.gridLayoutWidget)
+        self.pushRefresh.setMaximumSize(QtCore.QSize(70, 16777215))
+        self.pushRefresh.setObjectName(_fromUtf8("pushRefresh"))
+        self.horizontalLayout.addWidget(self.pushRefresh)
         self.pushSettings = QtGui.QPushButton(self.gridLayoutWidget)
+        self.pushSettings.setMaximumSize(QtCore.QSize(100, 16777215))
         self.pushSettings.setObjectName(_fromUtf8("pushSettings"))
         self.horizontalLayout.addWidget(self.pushSettings)
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
@@ -68,5 +75,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label.setText(_translate("MainWindow", " Workspace", None))
         self.label_2.setText(_translate("MainWindow", "Project", None))
+        self.pushRefresh.setText(_translate("MainWindow", "Refresh", None))
         self.pushSettings.setText(_translate("MainWindow", "Settings", None))
 
