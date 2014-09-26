@@ -81,6 +81,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             self.asana_api = asana.AsanaAPI(self.settings.value('Key'))
             #get workspace
             workspace = self.asana_api.list_workspaces()
+            self.ui.comboWorkspace.clear()
             for i in workspace:
                 self.workspaces_id[i['name']] = i['id']
                 #populate the combobox
@@ -104,9 +105,9 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         self.comboProjectChanged()
     
     def comboProjectChanged(self):
-        project_id = self.projects_id[self.ui.comboProject.currentText()]
+        self.project_id = self.projects_id[self.ui.comboProject.currentText()]
         #get project tasks
-        proj_tasks = self.asana_get_project_tasks(project_id)
+        proj_tasks = self.asana_get_project_tasks(self.project_id)
         qsubtasks = QStandardItemModel()
         for i in proj_tasks:
             item = QStandardItem(i['name'])
@@ -114,11 +115,16 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
                 check = Qt.Unchecked
                 item.setCheckState(check)
                 item.setCheckable(True)
+                self.projects_id[i['name']] = i['id']
             #populate the listview
             qsubtasks.appendRow(item)
-            self.proj_tasks_id[i['name']] = i['id']
         self.ui.listTasks.setModel(qsubtasks)
+        qsubtasks.itemChanged.connect(self.checkTasks)
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
+        
+    def checkTasks(self, item):
+        self.asana_api.rm_project_task(self.projects_id[item.text()], self.project_id)
+        self.ui.listTasks.model().removeRow(item.row())
         
     #fix the include_archived not supported on get_project_tasks
     def asana_get_project_tasks(self,project_id):
