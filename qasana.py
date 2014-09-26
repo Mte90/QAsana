@@ -3,9 +3,9 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from asana import asana
-from subprocess import Popen, PIPE,STDOUT
+from subprocess import Popen
 #The fondamental for working with python
-import os,sys,signal,shlex
+import os,sys,signal,argparse
 from ui_main import Ui_MainWindow
 class MainWindow ( QMainWindow , Ui_MainWindow):
     #Create settings for the software
@@ -22,14 +22,12 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         #http://pythonadventures.wordpress.com/2013/01/10/launch-just-one-instance-of-a-qt-application/
         wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
         if_focus = os.popen('xdotool getactivewindow').readlines()
-        QMainWindow.__init__( self, parent )
-        self.setMouseTracking(True)
         #Check if multiple rows output
         if len(wid) > 0:
             wid = wid[0]
         #hide if the window have focues when executed again
         if if_focus[0] == wid:
-            os.popen('xdotool windowunmap "' + wid + '"')
+            os.system('xdotool windowunmap "' + wid + '"')
             sys.exit()
         mouse = QCursor.pos()
         #Software already opened
@@ -43,6 +41,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             sys.exit()
         else:
             #Load the ui
+            QMainWindow.__init__( self, parent )
             self.ui = Ui_MainWindow()
             self.ui.setupUi( self )
             #Set the MainWindow Title
@@ -54,11 +53,21 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
             self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
             #When the software are closed on console the software are closed
             signal.signal(signal.SIGINT, signal.SIG_DFL)
+            parser = argparse.ArgumentParser()
+            parser.add_argument("--hide", help="hide the window at startup", action="store_true")
+            args = parser.parse_args()
             #Show the form
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
             self.show()
-            #move under cursor
-            os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
+            if not args.hide:
+                #move under cursor
+                os.system('xdotool getactivewindow windowmove ' + str(mouse.x() - 50) + ' ' + str(mouse.y() - 50))
+            else:
+                wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
+                #Check if multiple rows output
+                if len(wid) > 0:
+                    wid = wid[0]
+                os.popen('xdotool windowunmap "' + wid + '"')
             self.loadAsana()
         
     def openKeyDialog(self):
