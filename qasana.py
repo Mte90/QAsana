@@ -16,7 +16,6 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
     workspaces_id = {}
     projects_id = {}
     proj_tasks_id = {}
-    qsubtasks = QStandardItemModel()
     
     def __init__ ( self, parent = None ):
         #http://pythonadventures.wordpress.com/2013/01/10/launch-just-one-instance-of-a-qt-application/
@@ -108,7 +107,7 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
         project_id = self.projects_id[self.ui.comboProject.currentText()]
         #get project tasks
         proj_tasks = self.asana_get_project_tasks(project_id)
-        self.qsubtasks = QStandardItemModel()
+        qsubtasks = QStandardItemModel()
         for i in proj_tasks:
             item = QStandardItem(i['name'])
             if not i['name'].endswith(':'):
@@ -116,9 +115,9 @@ class MainWindow ( QMainWindow , Ui_MainWindow):
                 item.setCheckState(check)
                 item.setCheckable(True)
             #populate the listview
-            self.qsubtasks.appendRow(item)
+            qsubtasks.appendRow(item)
             self.proj_tasks_id[i['name']] = i['id']
-        self.ui.listTasks.setModel(self.qsubtasks)
+        self.ui.listTasks.setModel(qsubtasks)
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
         
     #fix the include_archived not supported on get_project_tasks
