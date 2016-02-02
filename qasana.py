@@ -3,7 +3,7 @@
 #Initialize PyQT
 from PyQt4.QtCore import Qt, QSettings
 from PyQt4.QtGui import QApplication, QMainWindow, QCursor, QStandardItemModel, QStandardItem, QMessageBox, QLineEdit, QInputDialog
-from asana import asana
+import asana
 #The fondamental for working with python
 import os, sys, signal, argparse
 from ui_main import Ui_MainWindow
@@ -11,7 +11,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #Create settings for the software
     settings = QSettings('Mte90', 'QAsana')
     settings.setFallbacksEnabled(False)
-    version = '1.0'
+    version = '2.0'
     appname = 'QAsana - ' + version + ' by Mte90'
     workspaces_id = {}
     workspace_id = ''
@@ -76,14 +76,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.settings.value('Key') != -1:
             self.ui.comboWorkspace.currentIndexChanged.disconnect(self.comboWorkspaceChanged)
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.asana_api = asana.AsanaAPI(self.settings.value('Key'))
+            self.asana_api = asana.Client.access_token(self.settings.value('Key'))
             #get workspace
-            workspace = self.asana_api.list_workspaces()
+            workspace = self.asana_api.users.me()
+            workspace = workspace['workspaces']
             self.ui.comboWorkspace.clear()
-            for i in workspace:
-                self.workspaces_id[i['name']] = i['id']
+            for workspace in self.asana_api.workspaces.find_all():
+                self.workspaces_id[workspace['name']] = workspace['id']
                 #populate the combobox
-                self.ui.comboWorkspace.addItem(i['name'])
+                self.ui.comboWorkspace.addItem(workspace['name'])
             self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
             self.comboWorkspaceChanged()
         else:
@@ -93,12 +94,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ui.comboProject.currentIndexChanged.disconnect(self.comboProjectChanged)
         self.workspace_id = self.workspaces_id[self.ui.comboWorkspace.currentText()]
         #get projects
-        projects = self.asana_api.list_projects(self.workspace_id, False)
         self.ui.comboProject.clear()
-        for i in projects:
-            self.projects_id[i['name']] = i['id']
+        for projects in self.asana_api.projects.find_all({'workspace': self.workspace_id, 'archived': 'false'}):
+            self.projects_id[projects['name']] = projects['id']
             #populate the combobox
-            self.ui.comboProject.addItem(i['name'])
+            self.ui.comboProject.addItem(projects['name'])
         self.ui.comboProject.currentIndexChanged.connect(self.comboProjectChanged)
         self.comboProjectChanged()
 
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(self.ui.comboProject.currentText()) > 0:
             self.project_id = self.projects_id[self.ui.comboProject.currentText()]
             #get project tasks
-            proj_tasks = self.asana_get_project_tasks(self.project_id)
+            proj_tasks = self.asana_api.tasks.find_by_project(self.project_id, { 'completed_since': 'now'})
             qsubtasks = QStandardItemModel()
             for i in proj_tasks:
                 item = QStandardItem(i['name'])
@@ -123,18 +123,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def checkTasks(self, item):
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.asana_api.update_task(self.projects_id[item.text()], None, None, None, True, None, None)
+        self.asana_api.tasks.delete(self.projects_id[item.text()])
         self.ui.listTasks.model().removeRow(item.row())
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
 
     def addTask(self):
         task = self.ui.lineTask.text()
         self.ui.lineTask.setText('')
-        self.asana_api.create_task(task, self.workspace_id, 'me', None, False, None, None, None, [self.project_id])
-
-    #fix the include_archived not supported on get_project_tasks
-    def asana_get_project_tasks(self, project_id):
-        return self.asana_api._asana('projects/' + str(project_id) + '/tasks?completed_since=now')
+        self.asana_api.tasks.create_in_workspace(self.workspace_id, {'name': task, 'projects': [self.project_id]})
+        self.comboProjectChanged()
 
     def get_pid(self):
         wid = os.popen('xdotool search --name "' + self.appname + '"').readlines()
