@@ -74,19 +74,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def loadAsana(self):
         if self.settings.value('Key') != -1:
-            self.ui.comboWorkspace.currentIndexChanged.disconnect(self.comboWorkspaceChanged)
-            QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-            self.asana_api = asana.Client.access_token(self.settings.value('Key'))
-            #get workspace
-            workspace = self.asana_api.users.me()
-            workspace = workspace['workspaces']
-            self.ui.comboWorkspace.clear()
-            for workspace in self.asana_api.workspaces.find_all():
-                self.workspaces_id[workspace['name']] = workspace['id']
-                #populate the combobox
-                self.ui.comboWorkspace.addItem(workspace['name'])
-            self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
-            self.comboWorkspaceChanged()
+            if self.settings.value('Key'):
+                self.ui.comboWorkspace.currentIndexChanged.disconnect(self.comboWorkspaceChanged)
+                QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+                self.asana_api = asana.Client.access_token(self.settings.value('Key'))
+                #get workspace
+                workspace = self.asana_api.users.me()
+                workspace = workspace['workspaces']
+                self.ui.comboWorkspace.clear()
+                for workspace in self.asana_api.workspaces.find_all():
+                    self.workspaces_id[workspace['name']] = workspace['id']
+                    #populate the combobox
+                    self.ui.comboWorkspace.addItem(workspace['name'])
+                self.ui.comboWorkspace.currentIndexChanged.connect(self.comboWorkspaceChanged)
+                self.comboWorkspaceChanged()
+            else:
+                QMessageBox.critical(self.window(), "Key not configured", "Set the key for access to Asana!")
         else:
             QMessageBox.critical(self.window(), "Key not configured", "Set the key for access to Asana!")
 
