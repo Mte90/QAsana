@@ -2,7 +2,7 @@
 # pylint: disable=fixme, line-too-long
 #Initialize PyQT
 from PyQt4.QtCore import Qt, QSettings
-from PyQt4.QtGui import QApplication, QMainWindow, QCursor, QStandardItemModel, QStandardItem, QMessageBox, QLineEdit, QInputDialog
+from PyQt4.QtGui import QApplication, QMainWindow, QCursor, QStandardItemModel, QStandardItem, QMessageBox, QLineEdit, QInputDialog, QFont
 import asana
 #The fondamental for working with python
 import os, sys, signal, argparse
@@ -106,15 +106,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(self.ui.comboProject.currentText()) > 0:
             self.project_id = self.projects_id[self.ui.comboProject.currentText()]
             #get project tasks
-            proj_tasks = self.asana_api.tasks.find_by_project(self.project_id, { 'completed_since': 'now'})
             qsubtasks = QStandardItemModel()
-            for i in proj_tasks:
-                item = QStandardItem(i['name'])
-                if not i['name'].endswith(':'):
+            for proj_tasks in self.asana_api.tasks.find_by_project(self.project_id, { 'completed_since': 'now'}):
+                item = QStandardItem(proj_tasks['name'])
+                if not proj_tasks['name'].endswith(':'):
+                    item.setFlags(item.flags() & Qt.ItemIsEditable)
                     check = Qt.Unchecked
                     item.setCheckState(check)
                     item.setCheckable(True)
-                    self.projects_id[i['name']] = i['id']
+                    self.projects_id[proj_tasks['name']] = proj_tasks['id']
+                else:
+                    font = QFont()
+                    font.setWeight(QFont.Bold)
+                    item.setFont(font)
                 #populate the listview
                 qsubtasks.appendRow(item)
             self.ui.listTasks.setModel(qsubtasks)
