@@ -109,12 +109,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             qsubtasks = QStandardItemModel()
             for proj_tasks in self.asana_api.tasks.find_by_project(self.project_id, { 'completed_since': 'now'}):
                 item = QStandardItem(proj_tasks['name'])
+                item.setEditable(True)
+                item.setToolTip('Double click to edit')
                 if not proj_tasks['name'].endswith(':'):
-                    item.setFlags(item.flags() & Qt.ItemIsEditable)
                     check = Qt.Unchecked
                     item.setCheckState(check)
                     item.setCheckable(True)
                     self.projects_id[proj_tasks['name']] = proj_tasks['id']
+                    item.setStatusTip(str(proj_tasks['id']))
                 else:
                     font = QFont()
                     font.setWeight(QFont.Bold)
@@ -127,8 +129,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def checkTasks(self, item):
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
-        self.asana_api.tasks.delete(self.projects_id[item.text()])
-        self.ui.listTasks.model().removeRow(item.row())
+        if item.checkState():
+            self.asana_api.tasks.delete(self.projects_id[item.text()])
+            self.ui.listTasks.model().removeRow(item.row())
+        else:
+            self.asana_api.tasks.update(item.statusTip(), {'id': item.statusTip(), 'name': item.text()})
         QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
 
     def addTask(self):
