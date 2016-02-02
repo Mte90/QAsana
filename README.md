@@ -15,8 +15,10 @@ Silent start mode
 
 #Installation
 
-Now qAsana use the official Python bindings, to install:
-   pip3 install asana
+Now QAsana use the official Python bindings, to install:
+
+    pip3 install asana
 
 Require Xdotool for move and hide the window
-   apt-get install xdotool
+
+    apt-get install xdotool
